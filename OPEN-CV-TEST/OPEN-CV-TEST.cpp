@@ -3,16 +3,35 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/videoio.hpp"
 #include <iostream>
+#include <stdio.h>
 using namespace std;
 using namespace cv;
 
-void detectAndDraw(Mat& img, CascadeClassifier& cascade,
+class LNode {
+public:
+    int data;
+    LNode* next;
+};
+
+class List {
+private: LNode* head;
+       int size;
+public:
+    List();
+    void append(int value);
+    int result();
+};
+
+
+
+void detectAndDraw(List& list, Mat& img, CascadeClassifier& cascade,
     CascadeClassifier& nestedCascade,
     double scale);
 string cascadeName;
 string nestedCascadeName;
 int main(int argc, const char** argv)
 {
+    List list;
     VideoCapture capture;
     Mat frame, image;
     string inputName;
@@ -59,10 +78,13 @@ int main(int argc, const char** argv)
             if (frame.empty())
                 break;
             Mat frame1 = frame(Rect(140, 0, 400, 410)).clone(); //This is about where MY face is
-            detectAndDraw(frame1, cascade, nestedCascade, scale);
+            detectAndDraw(list, frame1, cascade, nestedCascade, scale);
             char c = (char)waitKey(10);
             if (c == 27 || c == 'q' || c == 'Q')
                 break;
+            if (c == 'r' or c == 'R') {
+                list.result();
+            }
         }
     }
     else
@@ -70,13 +92,13 @@ int main(int argc, const char** argv)
         cout << "Detecting face(s) in " << inputName << endl;
         if (!image.empty())
         {
-            detectAndDraw(image, cascade, nestedCascade, scale);
+            detectAndDraw(list, image, cascade, nestedCascade, scale);
             waitKey(0);
         }
     }
     return 0;
 }
-void detectAndDraw(Mat& img, CascadeClassifier& cascade,
+void detectAndDraw(List &list, Mat& img, CascadeClassifier& cascade,
     CascadeClassifier& nestedCascade,
     double scale)
 {
@@ -106,13 +128,44 @@ void detectAndDraw(Mat& img, CascadeClassifier& cascade,
         //|CASCADE_DO_ROUGH_SEARCH
         | CASCADE_SCALE_IMAGE,
         Size(30, 30));
+    //after detect, add result to LL
+    list.append(faces.size());
 
-    if (faces.size() == 0) {
-        std::cout << "No face" << endl;
-    }
-    else {
-        std::cout << "Face" << endl;
-    }
+    
     t = (double)getTickCount() - t;
     imshow("result", img);
+}
+
+List::List() {
+    head = NULL;
+    size = 0;
+}
+void List::append(int value) {
+    if (head == NULL) {
+        head = new LNode;
+        head->data = value;
+        head->next = NULL;
+    }
+    else {
+        LNode* ptr = head;
+        while (ptr->next != NULL)
+            ptr = ptr->next;
+
+        LNode* node = new LNode;
+        ptr->next = node;
+        node->data = value;
+        node->next = NULL;
+    }
+    size++;
+}
+int List::result() {
+    LNode* ptr;
+    int sum = 0;
+    for (ptr = head; ptr != NULL; ptr = ptr->next) {
+        sum += ptr->data;
+    }
+    int iter = size; //only a slight idea on why i need this
+    double result = (double)sum / (double)iter;
+    cout << "Your face has been detected " << result*100 << "% of the time!" << endl;
+    return 0;
 }

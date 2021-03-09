@@ -1,2 +1,3 @@
 ﻿  OPEN-CV-TEST.cpp
-  OPEN-CV-TEST.vcxproj -> C:\Users\aloha\source\repos\OPEN-CV-TEST\x64\Debug\OPEN-CV-TEST.exe
+C:\Users\aloha\Coding\Active\OPEN-CV-TEST\OPEN-CV-TEST\OPEN-CV-TEST.cpp(133,29): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  OPEN-CV-TEST.vcxproj -> C:\Users\aloha\Coding\Active\OPEN-CV-TEST\x64\Debug\OPEN-CV-TEST.exe
